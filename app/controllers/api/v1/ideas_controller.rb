@@ -1,14 +1,11 @@
 module Api
   module V1
     class IdeasController < ApplicationController
-      
       def index
         if params[:category_name]
-          unless category = Category.find_by(name: params[:category_name])
-            return render status: 404
-          else
-            ideas = category.ideas
-          end
+          category = Category.find_by(name: params[:category_name])
+          return render status: 404 unless category
+          ideas = category.ideas
         else
           ideas = Idea.all.eager_load(:category)
         end
@@ -22,7 +19,7 @@ module Api
           category.ideas.create!(body: params[:body])
         end
         render status: 201
-      rescue => e
+      rescue ActiveRecord::RecordInvalid
         render status: 422
       end
 
