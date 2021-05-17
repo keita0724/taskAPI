@@ -5,11 +5,12 @@ module Api
         if params[:category_name]
           category = Category.find_by(name: params[:category_name])
           return render status: 404 unless category
+
           ideas = category.ideas
         else
           ideas = Idea.all.eager_load(:category)
         end
-        data = ideas.map { |idea| { 'id': idea.id, 'category': idea.category.name, 'body': idea.body } }
+        data = ideas.map { |idea| { id: idea.id, category: idea.category.name, body: idea.body } }
         render json: { data: data }
       end
 
@@ -22,7 +23,6 @@ module Api
       rescue ActiveRecord::RecordInvalid
         render status: 422
       end
-
     end
   end
 end
